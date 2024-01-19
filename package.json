@@ -3,7 +3,7 @@
 	"displayName": "Typescript Fold",
 	"description": "Fold / hide / collapse inline typescript to make code logic easier to read",
 	"icon": "res/icon.png",
-	"version": "0.1.0",
+	"version": "0.1.2",
 	"publisher": "SuncappedGames",
 	"homepage": "https://github.com/AphLute/vscode-typescript-fold",
 	"bugs": "https://github.com/AphLute/vscode-typescript-fold/issues",
@@ -13,7 +13,7 @@
 		"url": "https://github.com/AphLute/vscode-typescript-fold"
 	},
 	"engines": {
-		"vscode": "^1.74.0"
+		"vscode": "^1.75.0"
 	},
 	"categories": [
 		"Visualization",
@@ -141,25 +141,27 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"package": "vsce package",
-		"publish": "vsce publish",
+		"watch": "tsc -watch -p ./",
 		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./"
+		"package": "vsce package",
+		"prepublish": "npm run compile",
+		"publish": "vsce publish"
 	},
 	"devDependencies": {
 		"@types/node": "^18.11.18",
-		"@types/vscode": "1.74.0",
-		"typescript": "^4.9.4"
+		"@types/vscode": "1.75.x"
 	},
 	"__metadata": {
 		"id": "4dc4b505-dda3-4ac6-b839-397f8cf0adcc",
-		"publisherDisplayName": "AphLute",
+		"publisherDisplayName": "SuncappedGames",
 		"publisherId": "41376028-10e6-4784-aff4-9c6be1c5c66e",
 		"isPreReleaseVersion": false,
 		"targetPlatform": "undefined",
 		"updated": true,
 		"preRelease": false,
 		"installedTimestamp": 1657117103571
+	},
+	"dependencies": {
+		"typescript": "^5.3.3"
 	}
 }
