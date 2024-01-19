@@ -4,15 +4,16 @@ import { DecoratorTypeOptions } from "./decoration";
 import { Settings } from "./enums";
 import { ExtSettings } from "./settings";
 import { isMainEditor, isOpenedWithDiffEditor } from "./utils";
+import * as ts from 'typescript';
+import * as vscode from 'vscode';
 
 export class Decorator {
   // DTOs is just a short name for DecoratorTypeOptions,
   // nothing to do with data transfer objects.
   DTOs = new DecoratorTypeOptions();
   CurrentEditor: TextEditor;
-  ParsedRegexString: string;
   SupportedLanguages: string[] = [];
-  Offset: number = 50;
+  Offset: number = 100; // Apply to lines outside the viewport (visibleRanges) to mostly avoid seeing the changes happen when scrolling.
   StartLine: number = 0;
   EndLine: number = 0;
 
@@ -79,51 +80,71 @@ export class Decorator {
       }
     }
 
-    const regEx: RegExp = ExtSettings.Regex(currentLangId);
     const unFoldOnLineSelect = ExtSettings.Get<boolean>(Settings.unfoldOnLineSelect, currentLangId);
-    const text = this.CurrentEditor.document.getText();
-    const regexGroup: number = ExtSettings.Get<number>(Settings.regexGroup, currentLangId) as number | 1;
     const matchDecorationType = this.DTOs.MaskDecorationTypeCache(currentLangId);
     const plainDecorationType = this.DTOs.PlainDecorationType();
     const unfoldDecorationType = this.DTOs.UnfoldDecorationType(currentLangId);
     const foldRanges: DecorationOptions[] = [];
     const unfoldRanges: Range[] = [];
 
-    let match;
-    while (match = regEx.exec(text)) {
-
-      // if the matched content is undefined, skip it and continue to the next match
-      if (match && !match[regexGroup]) continue;
-
-      const matched = match[regexGroup];
-      const foldIndex = match[0].lastIndexOf(matched);
-      const startPosition = this.startPositionLine(match.index, foldIndex);
-      const endPosition = this.endPositionLine(match.index, foldIndex, matched.length);
-      const range: Range = new Range(startPosition, endPosition);
-
-      /* Checking if the toggle command is active or not. without conflicts with default state settings.
-         If it is not active, it will remove all decorations. */
-      if (!Cache.ShouldFold(this.CurrentEditor.document.uri.path, currentLangId)) {
-        this.CurrentEditor.setDecorations(plainDecorationType, []);
-        break;
-      }
-
-      /* Checking if the range is within the visible area of the editor plus a specified offset for a head decoration. */
-      if (!(this.StartLine <= range.start.line && range.end.line <= this.EndLine)) {
-        continue;
-      }
-
-      /* Checking if the range is selected by the user.
-      first check is for single selection, second is for multiple cursor selections.
-      or if the user has enabled the unfoldOnLineSelect option. */
-      if (this.CurrentEditor.selection.contains(range) ||
-        this.CurrentEditor.selections.find(s => range.contains(s)) ||
-        unFoldOnLineSelect && this.CurrentEditor.selections.find(s => s.start.line === range.start.line)) {
-        unfoldRanges.push(range);
-      } else {
-        foldRanges.push({ range, hoverMessage: "Content **" + matched + "**" });
-      }
+    /* Checking if the toggle command is active or not. without conflicts with default state settings.
+        If it is not active, it will remove all decorations. */
+    if (!Cache.ShouldFold(this.CurrentEditor.document.uri.path, currentLangId)) {
+      this.CurrentEditor.setDecorations(plainDecorationType, []);
     }
+    else {
+
+      const setTypeAnnotationRanges = (document: vscode.TextDocument): void => {
+        const sourceFile = ts.createSourceFile(document.fileName, document.getText(), ts.ScriptTarget.Latest, true);
+      
+        const visit = (node: ts.Node) => {
+          if (ts.isTypeNode(node)) { // ts.isTypeReferenceNode(node) || ts.isArrayTypeNode(node)
+            let startPos = node.getStart(sourceFile)
+      
+            const char1BeforeStart = document.getText(new vscode.Range(document.positionAt(startPos - 1), document.positionAt(startPos)));
+            const char2BeforeStart = document.getText(new vscode.Range(document.positionAt(startPos - 2), document.positionAt(startPos)));
+            const char4BeforeStart = document.getText(new vscode.Range(document.positionAt(startPos - 4), document.positionAt(startPos)));
+      
+            if(char2BeforeStart === ' :' || char2BeforeStart === ': ') {
+              startPos -= 2;
+            }
+            else if(char1BeforeStart === ':') {
+              startPos -= 1;
+            } 
+            else if(char4BeforeStart === ' as ') {
+              startPos -= 4;
+            }
+      
+            const rangeStartPos = document.positionAt(startPos);
+            const rangeEndPos = document.positionAt(node.getEnd());
+            const range = new vscode.Range(rangeStartPos, rangeEndPos);
+
+            /* Checking if the range is within the visible area of the editor plus a specified offset for a head decoration. */
+            if (this.StartLine <= range.start.line && range.end.line <= this.EndLine) {
+              /* Checking if the range is selected by the user.
+                first check is for single selection, second is for multiple cursor selections.
+                or if the user has enabled the unfoldOnLineSelect option. */
+              if (this.CurrentEditor.selection.contains(range) ||
+                this.CurrentEditor.selections.find(s => range.contains(s)) ||
+                unFoldOnLineSelect && this.CurrentEditor.selections.find(s => s.start.line === range.start.line)) {
+                unfoldRanges.push(range);
+              } else {
+                const content = document.getText(range);
+                foldRanges.push({ range, hoverMessage: `${content} [typescript-fold]`});
+              }
+            }
+          }
+      
+          ts.forEachChild(node, visit);
+        }
+      
+        visit(sourceFile);
+      }
+
+      setTypeAnnotationRanges(this.CurrentEditor.document);
+
+    }
+
 
     this.CurrentEditor.setDecorations(unfoldDecorationType, unfoldRanges);
     this.CurrentEditor.setDecorations(

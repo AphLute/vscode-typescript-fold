@@ -37,7 +37,7 @@ class ExtensionSettings {
    */
   private getLanguagesWithRegex(): string[] {
     // skip unnecessary keys excludedSettings
-    const excludedSettings: string[] = ["inlineFold", "supportedLanguages"];
+    const excludedSettings: string[] = ["typescriptFold", "supportedLanguages"];
     const settings = Object.values(Settings).filter((v) => !excludedSettings.includes(v));
     const langs = [];
     settings.forEach((v) => {
@@ -73,10 +73,6 @@ class ExtensionSettings {
     const withLangs: string[] = this.getLanguagesWithRegex();
     const supported: string[] = [...new Set([...langs, ...withLangs])];
     return supported;
-  }
-
-  public Regex(langId?: string): RegExp {
-    return RegExp(this.Get<RegExp>(Settings.regex, langId), this.Get<string>(Settings.regexFlags, langId));
   }
 
   constructor () { }

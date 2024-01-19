@@ -1,13 +1,10 @@
 export enum Commands {
-   InlineFoldToggle = "inlineFold.toggle",
-   InlineFoldClearCache = "inlineFold.clearCache"
+   TypescriptFoldToggle = "typescriptFold.toggle",
+   TypescriptFoldClearCache = "typescriptFold.clearCache"
 }
 export enum Settings {
-   identifier = "inlineFold",
+   identifier = "typescriptFold",
    autoFold = "autoFold",
-   regex = "regex",
-   regexFlags = "regexFlags",
-   regexGroup = "regexGroup",
    maskChar = "maskChar",
    maskColor = "maskColor",
    unfoldedOpacity = "unfoldedOpacity",

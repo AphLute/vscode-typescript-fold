@@ -18,12 +18,12 @@ export function activate(context: ExtensionContext) {
     }
   }
 
-  const toggleCommand = commands.registerCommand(Commands.InlineFoldToggle, () => {
+  const toggleCommand = commands.registerCommand(Commands.TypescriptFoldToggle, () => {
     Cache.ToggleShouldFold(window.activeTextEditor?.document.uri.path, window.activeTextEditor?.document.languageId)
     triggerUpdateDecorations()
   });
 
-  const clearCacheCommand = commands.registerCommand(Commands.InlineFoldClearCache, () => {
+  const clearCacheCommand = commands.registerCommand(Commands.TypescriptFoldClearCache, () => {
     Cache.Clear();
   });
 
