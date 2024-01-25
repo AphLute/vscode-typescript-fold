@@ -18,6 +18,7 @@ There are two ways to configure the extension, both can be done either by using 
 You can configure the extension from the settings UI under `User` or `Workspace` tabs (or by editing the json settings file).
 ```jsonc
 {
+  "typescriptFold.togglePerFile": false,
   "typescriptFold.unfoldedOpacity": 0.6,
   "typescriptFold.maskChar": "⋮",
   "typescriptFold.maskColor": "#000",
@@ -34,6 +35,7 @@ All the extension's commands are available under `Typescript Fold` command group
 - On Macos, Cmd+Shift+P then type 'Typescript Fold'
 
 ## Available Settings
+- `typescriptFold.togglePerFile` toggle the folding state per file or workspace (default: false)
 - `typescriptFold.unfoldedOpacity` opacity of the unfolded code when it's clicked or is selected
 - `typescriptFold.maskChar` text/character to mask the code when it is folded
 - `typescriptFold.maskColor` color of the mask character(s)
@@ -42,7 +44,6 @@ All the extension's commands are available under `Typescript Fold` command group
 - `typescriptFold.unfoldOnLineSelect` unfold the line when any part of the line is selected
 - `typescriptFold.autoFold` the default state of Typescript Folding when opening a file
 - `typescriptFold.useGlobal` force to use the global settings for all languages
-- `typescriptFold.togglePerFile` toggle the folding state per file or workspace (default: true)
 
 
 ## Running the extension

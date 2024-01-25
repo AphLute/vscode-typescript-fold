@@ -3,7 +3,7 @@
 	"displayName": "Typescript Fold",
 	"description": "Fold / hide / collapse inline typescript to make code logic easier to read",
 	"icon": "res/icon.png",
-	"version": "0.1.2",
+	"version": "0.1.3",
 	"publisher": "SuncappedGames",
 	"homepage": "https://github.com/AphLute/vscode-typescript-fold",
 	"bugs": "https://github.com/AphLute/vscode-typescript-fold/issues",
@@ -48,7 +48,7 @@
 					"type": "boolean",
 					"scope": "language-overridable",
 					"description": "Toggle Typescript Fold per file, instead of per workspace",
-					"default": true
+					"default": false
 				},
 				"typescriptFold.useGlobal": {
 					"type": "boolean",
