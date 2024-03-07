@@ -42,7 +42,7 @@
 					"type": "boolean",
 					"scope": "language-overridable",
 					"description": "Set the default state of Typescript Fold when opening a file",
-					"default": true
+					"default": false
 				},
 				"typescriptFold.togglePerFile": {
 					"type": "boolean",

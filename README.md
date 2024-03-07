@@ -24,7 +24,7 @@ You can configure the extension from the settings UI under `User` or `Workspace`
   "typescriptFold.maskColor": "#000",
   "typescriptFold.supportedLanguages": ["javascriptreact", "typescriptreact"],
   "typescriptFold.unfoldOnLineSelect": true,
-  "typescriptFold.autoFold": true
+  "typescriptFold.autoFold": false
 }
 ```
 This will be the default settings for all languages in `typescriptFold.supportedLanguages`. 
